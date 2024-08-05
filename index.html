@@ -1,11 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=Hello, initial-scale=1.0">
-    <title>Document</title>
+  <title>Phone Number Authentication</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 </head>
 <body>
-    Hello
+  <!-- Recaptcha container -->
+  <div id="recaptcha-container"></div>
+
+  <!-- Input for phone number -->
+  <input type="text" id="phone-number" placeholder="Enter phone number">
+
+  <!-- Button to send OTP -->
+  <button onclick="sendOTP()">Send OTP</button>
+
+  <!-- Input for OTP -->
+  <input type="text" id="otp" placeholder="Enter OTP">
+
+  <!-- Button to verify OTP -->
+  <button onclick="verifyOTP()">Verify OTP</button>
+
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Function to send OTP
+    function sendOTP() {
+      const phoneNumber = document.getElementById('phone-number').value; // Get the phone number from input
+      const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+      firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+        .then((confirmationResult) => {
+          window.confirmationResult = confirmationResult;
+          console.log('OTP sent');
+        }).catch((error) => {
+          console.error('Error during signInWithPhoneNumber', error);
+        });
+    }
+
+    // Function to verify OTP
+    function verifyOTP() {
+      const otpCode = document.getElementById('otp').value;
+      confirmationResult.confirm(otpCode).then((result) => {
+        const user = result.user;
+        console.log('Phone number verified and user signed in:', user);
+      }).catch((error) => {
+        console.error('Error during OTP verification', error);
+      });
+    }
+  </script>
 </body>
 </html>
